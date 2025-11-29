@@ -3,6 +3,9 @@ package com.example.dailytask
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
@@ -14,37 +17,48 @@ class SystemLogsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         db = DatabaseHelper(this)
 
-        // 1. KEAMANAN WAJIB: Tangkap Email Admin dan Cek Role
         val adminEmail = intent.getStringExtra("EXTRA_EMAIL")
 
         if (adminEmail.isNullOrEmpty() || db.getUserRole(adminEmail) != "admin") {
-            Toast.makeText(this, "Akses Ilegal! Silakan Login sebagai Admin.", Toast.LENGTH_LONG).show()
-
-            // Redirect ke Login
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            Toast.makeText(this, "Akses Ilegal!", Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        // Jika lolos cek keamanan:
         setContentView(R.layout.activity_list)
 
-        // 2. Inisialisasi View & Data
         val tvTitle = findViewById<TextView>(R.id.tvPageTitle)
         val listView = findViewById<ListView>(R.id.listViewData)
 
         tvTitle.text = "Log Aktivitas Sistem"
 
-        // Ambil data logs dari database
-        val logList = db.getAllLogs()
+        // Data format: "[timestamp] message"
+        val rawLogList = db.getAllLogs()
 
-        // Tampilkan ke ListView
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, logList)
+        val adapter = object : ArrayAdapter<String>(this, 0, rawLogList) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_log_admin, parent, false)
+                
+                val item = getItem(position) ?: return view
+                // Parse: "[timestamp] message"
+                // Simple hack: Split by "] "
+                val parts = item.split("] ")
+                val timestamp = parts.getOrElse(0) { "[" }.replace("[", "")
+                val message = parts.getOrElse(1) { item } // Fallback if parsing fails
+
+                val tvTime = view.findViewById<TextView>(R.id.tvLogTime)
+                val tvMsg = view.findViewById<TextView>(R.id.tvLogMessage)
+
+                tvTime.text = timestamp
+                tvMsg.text = message
+
+                return view
+            }
+        }
+
         listView.adapter = adapter
+        listView.divider = null
     }
 }

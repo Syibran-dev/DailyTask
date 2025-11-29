@@ -61,6 +61,10 @@
         <activity
             android:name=".SystemLogsActivity"
             android:exported="false" />
+            
+        <activity
+            android:name=".AdminUserTasksActivity"
+            android:exported="false" />
 
     </application>
 
