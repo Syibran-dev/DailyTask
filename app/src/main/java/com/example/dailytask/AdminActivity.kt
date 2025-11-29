@@ -16,7 +16,8 @@ class AdminActivity : AppCompatActivity() {
         // 1. Tangkap Username
         val username = intent.getStringExtra("EXTRA_USERNAME") ?: "Admin"
         val tvTitle = findViewById<TextView>(R.id.tvAdminTitle)
-        tvTitle.text = "Hello, $username"
+        // Use string resource for formatted text
+        tvTitle.text = getString(R.string.admin_welcome_message, username)
 
         // 2. Inisialisasi Tombol
         val btnLogout = findViewById<ImageView>(R.id.btnAdminLogout)

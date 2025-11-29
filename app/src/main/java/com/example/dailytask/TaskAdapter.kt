@@ -29,7 +29,7 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = taskList[position]
 
-        holder.tvTaskName.text = task.name
+        holder.tvTaskName.text = task.taskName
         holder.cbTask.isChecked = task.isDone
 
         // Efek Coret jika selesai
