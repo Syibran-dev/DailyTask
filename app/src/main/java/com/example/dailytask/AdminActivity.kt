@@ -22,7 +22,7 @@ class AdminActivity : AppCompatActivity() {
 
         db = DatabaseHelper(this)
 
-        // TANGKAP EMAIL & CEK SECURITY
+        // 1. TANGKAP EMAIL & CEK SECURITY WAJIB
         val passedEmail = intent.getStringExtra("EXTRA_EMAIL")
         adminEmail = passedEmail ?: ""
 
@@ -52,7 +52,7 @@ class AdminActivity : AppCompatActivity() {
 
         updateDashboardStats()
 
-        // Logic Logout
+        // 2. Logic Logout
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -60,18 +60,21 @@ class AdminActivity : AppCompatActivity() {
             Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
         }
 
-        // Logic Tombol Kartu
+        // 3. Logic Tombol Kartu (Menu Tengah)
         cardManageUsers.setOnClickListener {
             startActivity(Intent(this, ManageUsersActivity::class.java).apply {
                 putExtra("EXTRA_EMAIL", adminEmail)
             })
         }
 
+        // FIX: Kirimkan EXTRA_EMAIL saat klik card Settings
         cardSettings.setOnClickListener {
-            startActivity(Intent(this, SystemLogsActivity::class.java))
+            startActivity(Intent(this, SystemLogsActivity::class.java).apply {
+                putExtra("EXTRA_EMAIL", adminEmail)
+            })
         }
 
-        // Logic Bottom Navigation
+        // 4. Logic Bottom Navigation (Navigasi Utama)
         bottomNavAdmin.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_admin_dashboard -> true
@@ -82,7 +85,10 @@ class AdminActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_admin_logs -> {
-                    startActivity(Intent(this, SystemLogsActivity::class.java))
+                    // FIX: Kirimkan EXTRA_EMAIL saat klik Bottom Nav Logs
+                    startActivity(Intent(this, SystemLogsActivity::class.java).apply {
+                        putExtra("EXTRA_EMAIL", adminEmail)
+                    })
                     true
                 }
                 else -> false
