@@ -14,16 +14,13 @@ class ManageUsersActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         db = DatabaseHelper(this)
 
-        // 1. KEAMANAN WAJIB: Tangkap Email Admin dan Cek Role
+        // 1. KEAMANAN WAJIB: Cek Role Admin
         val adminEmail = intent.getStringExtra("EXTRA_EMAIL")
 
         if (adminEmail.isNullOrEmpty() || db.getUserRole(adminEmail) != "admin") {
             Toast.makeText(this, "Akses Ilegal! Silakan Login sebagai Admin.", Toast.LENGTH_LONG).show()
-
-            // Redirect ke Login
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -31,23 +28,34 @@ class ManageUsersActivity : AppCompatActivity() {
             return
         }
 
-        // Jika lolos cek keamanan:
         setContentView(R.layout.activity_list)
 
-        // 2. Inisialisasi View & Data
         val tvTitle = findViewById<TextView>(R.id.tvPageTitle)
         val listView = findViewById<ListView>(R.id.listViewData)
 
-        tvTitle.text = "Daftar Pengguna Aktif"
+        tvTitle.text = "Kelola Tugas Pengguna" // Ubah judul agar relevan
 
-        // Ambil data user dari database
-        val userList = db.getAllUsers()
-
-        // Tampilkan ke ListView
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, userList)
+        // Ambil semua user
+        val rawUserList = db.getAllUsers()
+        // Filter atau format ulang jika perlu. Format saat ini: "Username (Role)\nEmail"
+        
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, rawUserList)
         listView.adapter = adapter
 
-        // TODO: Tambahkan logic untuk Delete User (klik item list)
-        // Saat ini, item list hanya menampilkan data.
+        // CLICK LISTENER: Buka halaman AdminUserTasksActivity untuk user yang dipilih
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedString = rawUserList[position]
+            // Parse Email dari string: "Username (Role)\nEmail"
+            val parts = selectedString.split("\n")
+            if (parts.size > 1) {
+                val targetEmail = parts[1].trim()
+                
+                // Buka Activity khusus Admin untuk mengelola tugas user tersebut
+                val intent = Intent(this, AdminUserTasksActivity::class.java)
+                intent.putExtra("EXTRA_ADMIN_EMAIL", adminEmail)
+                intent.putExtra("EXTRA_TARGET_EMAIL", targetEmail)
+                startActivity(intent)
+            }
+        }
     }
 }

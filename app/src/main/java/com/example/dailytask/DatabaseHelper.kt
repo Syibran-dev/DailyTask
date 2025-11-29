@@ -8,22 +8,22 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-// Asumsi TaskModel sudah didefinisikan di tempat yang dapat diakses, misalnya:
-// data class TaskModel(val id: Int, val name: String, val isDone: Boolean)
-
-// FINAL VERSION 5
+// FINAL VERSION 6
 class DatabaseHelper(context: Context)
-    : SQLiteOpenHelper(context, "DailyTask.db", null, 5) {
+    : SQLiteOpenHelper(context, "DailyTask.db", null, 6) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT)")
         db?.execSQL("CREATE TABLE logs(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, created_at TEXT)")
-        db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER)")
+        // Updated table schema
+        db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER, task_date TEXT, task_desc TEXT)")
 
         seedAdminAccount(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        // Simple upgrade strategy: Drop and recreate.
+        // WARNING: This deletes data. For production, use ALTER TABLE.
         db?.execSQL("DROP TABLE IF EXISTS users")
         db?.execSQL("DROP TABLE IF EXISTS logs")
         db?.execSQL("DROP TABLE IF EXISTS tasks")
@@ -141,12 +141,14 @@ class DatabaseHelper(context: Context)
         return count
     }
 
-    fun addTask(emailUser: String, taskName: String): Boolean {
+    fun addTask(emailUser: String, taskName: String, taskDate: String, taskDesc: String): Boolean {
         val db = writableDatabase
         val values = ContentValues()
         values.put("email_user", emailUser)
         values.put("task_name", taskName)
         values.put("is_done", 0)
+        values.put("task_date", taskDate)
+        values.put("task_desc", taskDesc)
         val res = db.insert("tasks", null, values)
         return res != -1L
     }
@@ -160,7 +162,10 @@ class DatabaseHelper(context: Context)
                 val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
                 val name = cursor.getString(cursor.getColumnIndexOrThrow("task_name"))
                 val isDoneInt = cursor.getInt(cursor.getColumnIndexOrThrow("is_done"))
-                list.add(TaskModel(id, name, isDoneInt == 1))
+                val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
+                val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
+                
+                list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: ""))
             } while (cursor.moveToNext())
         }
         cursor.close()
