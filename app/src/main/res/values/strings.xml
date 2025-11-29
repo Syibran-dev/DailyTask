@@ -1,42 +1,59 @@
 <resources>
     <string name="app_name">DailyTask</string>
 
-    <!-- Admin Strings -->
     <string name="admin_title">Admin Portal</string>
     <string name="admin_subtitle">Manage System &amp; Users</string>
-    <string name="total_users_count">150</string>
-    <string name="total_users_label">Total Users</string>
-    <string name="reports_count">24</string>
-    <string name="reports_label">Reports</string>
     <string name="control_panel">Control Panel</string>
     <string name="admin_welcome_message">Hello, %1$s</string>
 
+    <string name="total_users_count">150</string>
+    <string name="total_users_label">Total Users</string>
+    <string name="reports_count">24</string>
+    <string name="reports_label">Activity Logs</string>
+
     <string name="menu_manage_users">Manage Users</string>
-    <string name="desc_manage_users">View, edit, or delete users</string>
-    
+    <string name="desc_manage_users">View list of registered users</string>
     <string name="menu_system_logs">System Logs</string>
     <string name="desc_system_logs">View recent user activities</string>
 
-    <!-- Deprecated/Unused strings kept to prevent reference errors if layout hasn't been updated yet -->
-    <string name="menu_app_settings">App Settings</string>
-    <string name="desc_app_settings">Database &amp; Configuration</string>
 
-    <string name="desc_icon_arrow">Arrow Icon</string>
-    <string name="desc_icon_logout">Logout Button</string>
-    <string name="desc_header_background">Header Background</string>
-
-    <!-- Home Activity Strings -->
-    <string name="desc_profile_picture">Profile Picture</string>
+    <string name="home_welcome_greeting">Halo, %1$s!</string>
     <string name="home_welcome_default">Welcome!</string>
-    <string name="home_subtitle">Here is your daily overview</string>
-    <string name="desc_logout_button">Logout</string>
-    <string name="desc_icon_pending">Pending Icon</string>
+    <string name="home_subtitle">Ayo selesaikan tugasmu!</string>
+    <string name="home_task_header">Tugas Hari Ini</string>
+
     <string name="default_count_pending">0</string>
     <string name="home_pending_label">Pending</string>
-    <string name="desc_icon_done">Done Icon</string>
     <string name="default_count_done">0</string>
     <string name="home_done_label">Completed</string>
-    <string name="home_task_header">Your Tasks</string>
-    <string name="desc_fab_add">Add New Task</string>
 
+
+    <string name="toast_fill_all_fields">Mohon isi semua data!</string>
+    <string name="toast_email_password_required">Email dan Password tidak boleh kosong!</string>
+    <string name="toast_login_admin_success">Login Admin Berhasil!</string>
+    <string name="toast_login_user_success">Login Berhasil!</string>
+    <string name="toast_login_failed">Email atau Password salah!</string>
+    <string name="toast_password_reset_unavailable">Fitur reset password sedang dalam pengembangan</string>
+
+    <string name="toast_registration_success">Registrasi Berhasil! Silakan Login.</string>
+    <string name="toast_registration_failed">Registrasi Gagal! Email mungkin sudah terdaftar.</string>
+    <string name="toast_admin_key_confirmed">Key Admin Terkonfirmasi!</string>
+    <string name="toast_admin_key_invalid">Registrasi Gagal! Secret Key Admin Salah.</string>
+
+
+    <string name="toast_task_added">Tugas ditambahkan!</string>
+    <string name="toast_task_deleted">Tugas dihapus</string>
+    <string name="dialog_delete_title">Hapus Tugas</string>
+    <string name="dialog_delete_message">Yakin ingin menghapus \'%1$s\'?</string>
+
+
+    <string name="desc_header_background">Header Background</string>
+    <string name="desc_icon_logout">Logout Button</string>
+    <string name="desc_logout_button">Logout Button</string>
+    <string name="desc_icon_arrow">Arrow Icon</string>
+    <string name="desc_profile_picture">Profile Picture</string>
+    <string name="desc_icon_pending">Pending Icon</string>
+    <string name="desc_icon_done">Completed Icon</string>
+    <string name="desc_fab_add">Add New Task</string>
+    <string name="toast_logout_success">Berhasil Logout</string>
 </resources>

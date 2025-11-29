@@ -34,7 +34,8 @@ class LoginActivity : AppCompatActivity() {
 
         // 3. Logic Tombol Lupa Password
         tvForgotPassword.setOnClickListener {
-            Toast.makeText(this, "Fitur reset password sedang dalam pengembangan", Toast.LENGTH_SHORT).show()
+            // Menggunakan resource string
+            Toast.makeText(this, getString(R.string.toast_password_reset_unavailable), Toast.LENGTH_SHORT).show()
         }
 
         // 4. Logic Tombol Login (Inti Proses)
@@ -44,7 +45,8 @@ class LoginActivity : AppCompatActivity() {
 
             // Validasi Input Kosong
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Email dan Password tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                // Menggunakan resource string
+                Toast.makeText(this, getString(R.string.toast_email_password_required), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -58,25 +60,27 @@ class LoginActivity : AppCompatActivity() {
                 val username = db.getUsername(email)
 
                 // Tentukan tujuan berdasarkan Role
-                val intent: Intent
-                if (role == "admin") {
-                    Toast.makeText(this, "Login Admin Berhasil!", Toast.LENGTH_SHORT).show()
-                    intent = Intent(this, AdminActivity::class.java)
+                val intent = if (role == "admin") {
+                    // Menggunakan resource string
+                    Toast.makeText(this, getString(R.string.toast_login_admin_success), Toast.LENGTH_SHORT).show()
+                    Intent(this, AdminActivity::class.java)
                 } else {
-                    Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show()
-                    intent = Intent(this, HomeActivity::class.java)
+                    // Menggunakan resource string
+                    Toast.makeText(this, getString(R.string.toast_login_user_success), Toast.LENGTH_SHORT).show()
+                    Intent(this, HomeActivity::class.java)
                 }
 
                 // --- PENTING: KIRIM DATA KE ACTIVITY SELANJUTNYA ---
-                intent.putExtra("EXTRA_USERNAME", username) // Kirim Nama (untuk sapaan Halo)
-                intent.putExtra("EXTRA_EMAIL", email)       // Kirim Email (KUNCI UTAMA untuk simpan tugas)
+                intent.putExtra("EXTRA_USERNAME", username)
+                intent.putExtra("EXTRA_EMAIL", email)
 
                 startActivity(intent)
-                finish() // Tutup LoginActivity agar user tidak bisa back ke sini
+                finish()
 
             } else {
                 // --- LOGIN GAGAL ---
-                Toast.makeText(this, "Email atau Password salah!", Toast.LENGTH_SHORT).show()
+                // Menggunakan resource string
+                Toast.makeText(this, getString(R.string.toast_login_failed), Toast.LENGTH_SHORT).show()
             }
         }
     }

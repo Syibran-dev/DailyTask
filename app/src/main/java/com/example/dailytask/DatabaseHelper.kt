@@ -6,6 +6,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+
+// Asumsi TaskModel sudah didefinisikan di tempat yang dapat diakses, misalnya:
+// data class TaskModel(val id: Int, val name: String, val isDone: Boolean)
 
 // FINAL VERSION 5
 class DatabaseHelper(context: Context)
@@ -15,6 +19,8 @@ class DatabaseHelper(context: Context)
         db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT)")
         db?.execSQL("CREATE TABLE logs(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, created_at TEXT)")
         db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER)")
+
+        seedAdminAccount(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -24,7 +30,15 @@ class DatabaseHelper(context: Context)
         onCreate(db)
     }
 
-    // --- FUNGSI UTAMA AUTH & LOGS ---
+    private fun seedAdminAccount(db: SQLiteDatabase?) {
+        val values = ContentValues()
+        values.put("email", "admin@daily.com")
+        values.put("username", "System Admin")
+        values.put("password", "123456")
+        values.put("role", "admin")
+        db?.insert("users", null, values)
+    }
+
     fun register(email: String, username: String, password: String, role: String = "user"): Boolean {
         val db = writableDatabase
         val values = ContentValues()
@@ -56,38 +70,98 @@ class DatabaseHelper(context: Context)
 
     fun getUsername(email: String): String {
         val db = readableDatabase
-        var name = ""
+        var username = ""
         val cursor = db.rawQuery("SELECT username FROM users WHERE email=?", arrayOf(email))
-        if (cursor.moveToFirst()) name = cursor.getString(0)
+        if (cursor.moveToFirst()) {
+            username = cursor.getString(0)
+        }
         cursor.close()
-        return name
+        return username
     }
 
-    fun getUserRole(email: String): String { /* ... (Logika sama) ... */ return "user" }
-    fun addLog(message: String) { /* ... (Logika sama) ... */ }
-    fun getAllLogs(): ArrayList<String> { /* ... (Logika sama) ... */ return ArrayList() }
-    fun getAllUsers(): ArrayList<String> { /* ... (Logika sama) ... */ return ArrayList() }
+    fun getUserRole(email: String): String {
+        val db = readableDatabase
+        var role = "user"
+        val cursor = db.rawQuery("SELECT role FROM users WHERE email=?", arrayOf(email))
+        if (cursor.moveToFirst()) {
+            role = cursor.getString(0)
+        }
+        cursor.close()
+        return role
+    }
 
-    // --- FUNGSI TASK (CRUD & STATS) ---
+    fun addLog(message: String) {
+        val db = writableDatabase
+        val values = ContentValues()
+        val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+        values.put("message", message)
+        values.put("created_at", timestamp)
+        db.insert("logs", null, values)
+    }
+
+    fun getAllLogs(): ArrayList<String> {
+        val list = ArrayList<String>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM logs ORDER BY id DESC", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val msg = cursor.getString(cursor.getColumnIndexOrThrow("message"))
+                val time = cursor.getString(cursor.getColumnIndexOrThrow("created_at"))
+                list.add("[$time] $msg")
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun getAllUsers(): ArrayList<String> {
+        val list = ArrayList<String>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT username, email, role FROM users", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val user = cursor.getString(0)
+                val email = cursor.getString(1)
+                val role = cursor.getString(2)
+                list.add("$user ($role)\n$email")
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun getUserCount(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM users", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        return count
+    }
+
     fun addTask(emailUser: String, taskName: String): Boolean {
         val db = writableDatabase
         val values = ContentValues()
         values.put("email_user", emailUser)
         values.put("task_name", taskName)
         values.put("is_done", 0)
-        return db.insert("tasks", null, values) != -1L
+        val res = db.insert("tasks", null, values)
+        return res != -1L
     }
 
     fun getUserTasks(emailUser: String): ArrayList<TaskModel> {
         val list = ArrayList<TaskModel>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT id, task_name, is_done FROM tasks WHERE email_user=? ORDER BY is_done ASC, id DESC", arrayOf(emailUser))
-
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(0)
-            val name = cursor.getString(1)
-            val isDone = cursor.getInt(2) == 1
-            list.add(TaskModel(id, name, isDone))
+        val cursor = db.rawQuery("SELECT * FROM tasks WHERE email_user=? ORDER BY is_done ASC, id DESC", arrayOf(emailUser))
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("task_name"))
+                val isDoneInt = cursor.getInt(cursor.getColumnIndexOrThrow("is_done"))
+                list.add(TaskModel(id, name, isDoneInt == 1))
+            } while (cursor.moveToNext())
         }
         cursor.close()
         return list
@@ -107,17 +181,16 @@ class DatabaseHelper(context: Context)
 
     fun getTaskCounts(emailUser: String): Pair<Int, Int> {
         val db = readableDatabase
-        val cursorPending = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE email_user=? AND is_done=0", arrayOf(emailUser))
-        val cursorDone = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE email_user=? AND is_done=1", arrayOf(emailUser))
-
         var pending = 0
         var done = 0
 
-        if (cursorPending.moveToFirst()) pending = cursorPending.getInt(0)
-        if (cursorDone.moveToFirst()) done = cursorDone.getInt(0)
+        val curPending = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE email_user=? AND is_done=0", arrayOf(emailUser))
+        if (curPending.moveToFirst()) pending = curPending.getInt(0)
+        curPending.close()
 
-        cursorPending.close()
-        cursorDone.close()
+        val curDone = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE email_user=? AND is_done=1", arrayOf(emailUser))
+        if (curDone.moveToFirst()) done = curDone.getInt(0)
+        curDone.close()
 
         return Pair(pending, done)
     }
