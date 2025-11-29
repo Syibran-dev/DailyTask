@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-// Tambahkan anotasi untuk menghilangkan warning terkait fungsi yang sudah usang
 @Suppress("DEPRECATION")
 class HomeActivity : AppCompatActivity() {
 
@@ -32,11 +31,9 @@ class HomeActivity : AppCompatActivity() {
 
         db = DatabaseHelper(this)
 
-        // 1. Tangkap Data User
         val username = intent.getStringExtra("EXTRA_USERNAME") ?: "User"
         userEmail = intent.getStringExtra("EXTRA_EMAIL") ?: ""
 
-        // 2. Inisialisasi View
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
         tvPending = findViewById(R.id.tvPendingCount)
         tvDone = findViewById(R.id.tvDoneCount)
@@ -45,14 +42,11 @@ class HomeActivity : AppCompatActivity() {
         rvTasks = findViewById(R.id.rvTasks)
         bottomNavUser = findViewById(R.id.bottomNavUser)
 
-        // FIX WARNING (Line 46): Menggunakan resource string dengan placeholder
         tvWelcome.text = getString(R.string.home_welcome_greeting, username)
 
-        // 3. Setup RecyclerView & Load Data
         setupRecyclerView()
         loadTasks()
 
-        // 4. Setup Listeners
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -61,29 +55,36 @@ class HomeActivity : AppCompatActivity() {
         }
         fabAdd.setOnClickListener { showAddTaskDialog() }
 
-        // 5. Setup Bottom Navigation Listener
         bottomNavUser.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_tasks -> {
-                    true
-                }
-                R.id.nav_calendar -> {
-                    Toast.makeText(this, "Fitur Calendar sedang disiapkan!", Toast.LENGTH_SHORT).show()
-                    false
-                }
-                R.id.nav_profile -> {
-                    Toast.makeText(this, "Membuka Profil Pengguna!", Toast.LENGTH_SHORT).show()
-                    false
-                }
-                else -> false
+            val intentToStart: Intent? = when (item.itemId) {
+                R.id.nav_tasks -> null
+                R.id.nav_calendar -> Intent(this, CalendarActivity::class.java)
+                R.id.nav_profile -> Intent(this, ProfileActivity::class.java)
+                else -> null
             }
+
+            if (intentToStart != null) {
+                intentToStart.putExtra("EXTRA_USERNAME", intent.getStringExtra("EXTRA_USERNAME"))
+                intentToStart.putExtra("EXTRA_EMAIL", userEmail)
+                startActivity(intentToStart)
+            }
+            return@setOnItemSelectedListener item.itemId == R.id.nav_tasks
         }
 
         bottomNavUser.selectedItemId = R.id.nav_tasks
     }
 
     private fun setupRecyclerView() {
-        taskAdapter = TaskAdapter(ArrayList(),
+        taskAdapter = TaskAdapter(
+            ArrayList(),
+            onTaskClick = { task -> // LISTENER DETAIL (Diperlukan oleh TaskAdapter yang baru)
+                val intent = Intent(this, TaskDetailActivity::class.java).apply {
+                    putExtra("EXTRA_TASK_ID", task.id)
+                    putExtra("EXTRA_TASK_NAME", task.name) // Kirim nama juga untuk kemudahan
+                    putExtra("EXTRA_EMAIL", userEmail)
+                }
+                startActivity(intent)
+            },
             onStatusChange = { task, isDone ->
                 db.updateTaskStatus(task.id, isDone)
                 loadTasks()
@@ -132,9 +133,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmation(task: TaskModel) {
-        // FIX ERROR 'name': Menggunakan getString dengan placeholder dan task.name
-        // Use task.taskName instead of task.name to match TaskModel definition
-        val message = getString(R.string.dialog_delete_message, task.taskName)
+        // FIX: Menggunakan properti model yang benar: task.name
+        val message = getString(R.string.dialog_delete_message, task.name)
 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.dialog_delete_title))

@@ -34,8 +34,9 @@ class LoginActivity : AppCompatActivity() {
 
         // 3. Logic Tombol Lupa Password
         tvForgotPassword.setOnClickListener {
-            // Menggunakan resource string
-            Toast.makeText(this, getString(R.string.toast_password_reset_unavailable), Toast.LENGTH_SHORT).show()
+            // Navigasi ke ForgotPasswordActivity
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intent)
         }
 
         // 4. Logic Tombol Login (Inti Proses)

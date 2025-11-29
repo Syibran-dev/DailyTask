@@ -194,4 +194,12 @@ class DatabaseHelper(context: Context)
 
         return Pair(pending, done)
     }
+
+    fun updatePassword(email: String, newPass: String): Boolean {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("password", newPass)
+        val rowsAffected = db.update("users", values, "email=?", arrayOf(email))
+        return rowsAffected > 0
+    }
 }
