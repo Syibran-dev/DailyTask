@@ -19,15 +19,14 @@ class LoginActivity : AppCompatActivity() {
         // Inisialisasi Database
         db = DatabaseHelper(this)
 
-        // 1. Inisialisasi View (Sesuai ID di XML Modern)
-        // Perhatikan tipe datanya adalah TextInputEditText
+        // 1. Inisialisasi View
         val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvRegister = findViewById<TextView>(R.id.tvRegister)
         val tvForgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
-        // 2. Logic Tombol Register (Belum punya akun)
+        // 2. Logic Tombol Register
         tvRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
@@ -68,8 +67,9 @@ class LoginActivity : AppCompatActivity() {
                     intent = Intent(this, HomeActivity::class.java)
                 }
 
-                // Kirim Username ke Activity selanjutnya agar bisa ditampilkan
-                intent.putExtra("EXTRA_USERNAME", username)
+                // --- PENTING: KIRIM DATA KE ACTIVITY SELANJUTNYA ---
+                intent.putExtra("EXTRA_USERNAME", username) // Kirim Nama (untuk sapaan Halo)
+                intent.putExtra("EXTRA_EMAIL", email)       // Kirim Email (KUNCI UTAMA untuk simpan tugas)
 
                 startActivity(intent)
                 finish() // Tutup LoginActivity agar user tidak bisa back ke sini
