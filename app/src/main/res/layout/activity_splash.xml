@@ -2,43 +2,51 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#6CABFF">
+    android:background="#6A11CB"
+    tools:context=".SplashActivity">
 
+    <!-- Logo (Dipertahankan) -->
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:src="@drawable/ic_daily"
-        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="Application Logo"
         app:layout_constraintBottom_toTopOf="@id/title"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="80dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
+    <!-- Title (Dipertahankan, font sedikit disesuaikan) -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DaiLyTask"
+        android:text="@string/app_name"
         android:textStyle="bold"
-        android:textSize="30sp"
+        android:textSize="36sp"
+        android:fontFamily="sans-serif-black"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/progressBar"/>
 
-    <Button
-        android:id="@+id/btnMasuk"
+    <!-- ProgressBar (Pengganti Tombol) -->
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="masuk"
-        android:backgroundTint="#BDE8FF"
+        android:layout_marginTop="48dp"
+        android:indeterminateTint="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
