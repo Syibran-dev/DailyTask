@@ -3,21 +3,31 @@
 
     <string name="admin_title">Admin Portal</string>
     <string name="admin_subtitle">Manage System &amp; Users</string>
-    <string name="total_users_count">150</string>
-    <string name="total_users_label">Total Users</string>
-    <string name="reports_count">24</string>
-    <string name="reports_label">Reports</string>
+    <string name="desc_icon_logout">Logout Button</string>
     <string name="control_panel">Control Panel</string>
 
+    <string name="total_users_count">150</string>
+    <string name="total_users_label">Total Users</string>
+    <string name="reports_count">Log</string>
+    <string name="reports_label">Activity</string>
+
     <string name="menu_manage_users">Manage Users</string>
-    <string name="desc_manage_users">View, edit, or delete users</string>
-    <string name="menu_app_settings">App Settings</string>
-    <string name="desc_app_settings">Database &amp; Configuration</string>
-
+    <string name="desc_manage_users">View list of registered users</string>
+    <string name="menu_app_settings">System Logs</string>
+    <string name="desc_app_settings">View recent user activities</string>
     <string name="desc_icon_arrow">Arrow Icon</string>
-    <string name="desc_icon_logout">Logout Button</string>
 
-    <!-- Renamed duplicates -->
-    <string name="menu_system_logs">System Logs</string>
-    <string name="desc_system_logs">View recent user activities</string>
+    <string name="home_welcome_default">Halo, User!</string>
+    <string name="home_subtitle">Ayo selesaikan tugasmu!</string>
+    <string name="home_pending_label">Menunggu</string>
+    <string name="home_done_label">Selesai</string>
+    <string name="home_task_header">Tugas Hari Ini</string>
+    <string name="default_count_pending">0</string>
+    <string name="default_count_done">0</string>
+
+    <string name="desc_header_background">Header Background</string>
+    <string name="desc_profile_picture">Profile Picture</string>
+    <string name="desc_icon_pending">Pending Icon</string>
+    <string name="desc_icon_done">Completed Icon</string>
+    <string name="desc_fab_add">Add Task</string>
 </resources>

@@ -5,35 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="#FAFAFA">
 
-    <View
+    <ImageView
         android:id="@+id/viewHeader"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:background="@drawable/bg_login_gradient"
+        android:layout_height="260dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_header_wave"
+        android:contentDescription="@string/desc_header_background"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardProfile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="48dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@android:drawable/sym_def_app_icon"
+            android:padding="8dp"
+            android:background="#E0E0E0"
+            android:contentDescription="@string/desc_profile_picture"/>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/tvWelcome"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:text="Halo, User!"
+        android:layout_marginStart="16dp"
+        android:text="@string/home_welcome_default"
         android:textColor="@android:color/white"
-        android:textSize="24sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/btnLogout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/cardProfile"
+        app:layout_constraintTop_toTopOf="@id/cardProfile" />
 
     <TextView
         android:id="@+id/tvSubtitleHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Semoga harimu menyenangkan"
+        android:text="@string/home_subtitle"
         android:textColor="#E0E0E0"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tvWelcome"
@@ -44,116 +62,117 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="24dp"
-        android:contentDescription="Logout Button"
+        android:contentDescription="@string/desc_logout_button"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         app:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/tvWelcome"
+        app:layout_constraintBottom_toBottomOf="@+id/cardProfile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvWelcome" />
+        app:layout_constraintTop_toTopOf="@+id/cardProfile" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardDashboard"
+    <LinearLayout
+        android:id="@+id/layoutDashboard"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="24dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="8dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintTop_toBottomOf="@+id/tvSubtitleHome">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardPending"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvPendingCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="#F44336"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pending Tasks"
-                    android:textSize="12sp"
-                    android:textColor="#757575"/>
+                android:background="@drawable/bg_card_pending"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <ImageView
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@android:drawable/ic_popup_sync" app:tint="#F44336"
+                    android:contentDescription="@string/desc_icon_pending" android:layout_gravity="end"/>
+                <TextView android:id="@+id/tvPendingCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/default_count_pending" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#F44336"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_pending_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#D32F2F"/>
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="#E0E0E0"
-                android:layout_marginVertical="8dp"/>
-
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardDone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp">
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvDoneCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Completed"
-                    android:textSize="12sp"
-                    android:textColor="#757575"/>
+                android:background="@drawable/bg_card_completed"
+                android:orientation="vertical"
+                android:padding="16dp">
+                <ImageView
+                    android:layout_width="24dp" android:layout_height="24dp"
+                    android:src="@android:drawable/checkbox_on_background" app:tint="#4CAF50"
+                    android:contentDescription="@string/desc_icon_done" android:layout_gravity="end"/>
+                <TextView android:id="@+id/tvDoneCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/default_count_done" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#4CAF50"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_done_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#388E3C"/>
             </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvLabelTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Tugas Hari Ini"
-        android:textColor="@color/black"
-        android:textSize="18sp"
+        android:layout_marginStart="24dp"
+        android:text="@string/home_task_header"
+        android:textColor="#212121"
+        android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/cardDashboard"
-        app:layout_constraintTop_toBottomOf="@+id/cardDashboard" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutDashboard" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTasks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:paddingHorizontal="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavUser"
         app:layout_constraintTop_toBottomOf="@+id/tvLabelTask"
-        tools:listitem="@layout/item_task"/> <com.google.android.material.floatingactionbutton.FloatingActionButton
-    android:id="@+id/fabAdd"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="24dp"
-    android:src="@android:drawable/ic_input_add"
-    app:backgroundTint="#6A11CB"
-    app:tint="@android:color/white"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+        tools:listitem="@layout/item_task"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_input_add"
+        android:contentDescription="@string/desc_fab_add"
+        app:backgroundTint="#6A11CB"
+        app:tint="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavUser"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/menu_user"
+        app:itemIconTint="#6A11CB"
+        app:itemTextColor="#6A11CB"
+        android:background="@android:color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
