@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DailyTask">
 
-        <!-- Splash Screen -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -22,24 +21,27 @@
             </intent-filter>
         </activity>
 
-        <!-- Login Page -->
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
-
-        <!-- Register Page -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
 
-        <!-- Home Page -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
 
-        <!-- Admin Page -->
         <activity
             android:name=".AdminActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageUsersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SystemLogsActivity"
             android:exported="false" />
 
     </application>
