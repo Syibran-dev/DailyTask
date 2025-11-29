@@ -37,6 +37,11 @@
             android:name=".HomeActivity"
             android:exported="false" />
 
+        <!-- Admin Page -->
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
