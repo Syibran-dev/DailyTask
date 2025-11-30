@@ -21,25 +21,58 @@
     <TextView android:id="@+id/tvAdminSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/admin_subtitle" android:textColor="#E0E0E0" android:textSize="14sp" app:layout_constraintStart_toStartOf="@+id/tvAdminTitle" app:layout_constraintTop_toBottomOf="@+id/tvAdminTitle" />
     <ImageView android:id="@+id/btnAdminLogout" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginEnd="24dp" android:contentDescription="@string/desc_icon_logout" android:src="@android:drawable/ic_menu_close_clear_cancel" app:tint="@android:color/white" app:layout_constraintBottom_toBottomOf="@+id/tvAdminSubtitle" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="@+id/tvAdminTitle" />
 
-    <LinearLayout android:id="@+id/layoutStats" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="24dp" android:layout_marginTop="24dp" android:orientation="horizontal" app:layout_constraintTop_toBottomOf="@+id/tvAdminSubtitle">
+    <LinearLayout android:id="@+id/layoutStats" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="24dp" android:layout_marginTop="24dp" android:orientation="vertical" app:layout_constraintTop_toBottomOf="@+id/tvAdminSubtitle">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#E3F2FD">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#1565C0" android:contentDescription="User Icon" android:layout_gravity="end"/>
-                <TextView android:id="@+id/tvTotalUsersCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/total_users_count" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#1565C0"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/total_users_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#0D47A1"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <!-- Row 1: Users & Logs -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStatsUsers"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:background="#E3F2FD">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_agenda" app:tint="#1565C0" android:contentDescription="User Icon" android:layout_gravity="end"/>
+                    <TextView android:id="@+id/tvTotalUsersCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/total_users_count" android:textSize="28sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#1565C0"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/total_users_label" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#0D47A1"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#FFEBEE">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_info_details" app:tint="#D32F2F" android:contentDescription="Log Icon" android:layout_gravity="end"/>
-                <TextView android:id="@+id/tvTotalLogsCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reports_count" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#D32F2F"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reports_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#C62828"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStatsLogs"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#FFEBEE">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_info_details" app:tint="#D32F2F" android:contentDescription="Log Icon" android:layout_gravity="end"/>
+                    <TextView android:id="@+id/tvTotalLogsCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reports_count" android:textSize="28sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#D32F2F"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/reports_label" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#C62828"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <!-- Row 2: Pending & Completed Tasks (Global) -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStatsPending"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:background="#FFF3E0">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_popup_sync" app:tint="#E65100" android:contentDescription="Pending Icon" android:layout_gravity="end"/>
+                    <TextView android:id="@+id/tvGlobalPendingCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textSize="28sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#E65100"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pending Tasks" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#EF6C00"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStatsDone"
+                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" app:cardCornerRadius="16dp" app:cardElevation="6dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="#E8F5E9">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/checkbox_on_background" app:tint="#2E7D32" android:contentDescription="Done Icon" android:layout_gravity="end"/>
+                    <TextView android:id="@+id/tvGlobalDoneCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textSize="28sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#2E7D32"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Completed Tasks" android:textSize="12sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#43A047"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView android:id="@+id/tvMenuLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="32dp" android:layout_marginStart="24dp" android:text="@string/control_panel" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/black" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/layoutStats"/>
@@ -64,7 +97,8 @@
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:orientation="horizontal">
                     <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#6A11CB" android:contentDescription="@string/desc_icon_arrow" />
@@ -82,7 +116,8 @@
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                android:clickable="true" android:focusable="true" android:foreground="?attr/selectableItemBackground">
 
                 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingHorizontal="20dp" android:orientation="horizontal">
                     <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_menu_preferences" app:tint="#6A11CB" android:contentDescription="@string/desc_icon_arrow" />

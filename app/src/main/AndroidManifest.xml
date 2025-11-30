@@ -66,6 +66,10 @@
             android:name=".AdminUserTasksActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".AdminGlobalTasksActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

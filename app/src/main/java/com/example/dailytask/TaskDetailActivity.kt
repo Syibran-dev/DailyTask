@@ -20,11 +20,15 @@ class TaskDetailActivity : AppCompatActivity() {
         val tvDetailStatus = findViewById<TextView>(R.id.tvDetailStatus)
 
         tvDetailName.text = taskName
-        tvDetailDate.text = if (taskDate.isNotEmpty()) "Tenggat: $taskDate" else "Tenggat: -"
+        
+        // FIX: Menghapus prefix "Tenggat:" agar lebih rapi sesuai request.
+        // Layout XML sudah memiliki header "TANGGAL".
+        tvDetailDate.text = if (taskDate.isNotEmpty()) taskDate else "-"
+        
         tvDetailDesc.text = if (taskDesc.isNotEmpty()) taskDesc else "Tidak ada deskripsi."
         
         val statusText = if (isDone) "Selesai" else "Belum Selesai"
-        tvDetailStatus.text = "Status: $statusText"
+        tvDetailStatus.text = statusText
         tvDetailStatus.setTextColor(if (isDone) getColor(android.R.color.holo_green_dark) else getColor(android.R.color.holo_red_dark))
     }
 }

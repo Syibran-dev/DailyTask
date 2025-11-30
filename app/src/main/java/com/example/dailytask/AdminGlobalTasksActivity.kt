@@ -4,60 +4,59 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
 
-class AdminUserTasksActivity : AppCompatActivity() {
+class AdminGlobalTasksActivity : AppCompatActivity() {
 
     private lateinit var db: DatabaseHelper
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var rvTasks: RecyclerView
-    private lateinit var tvPending: TextView
-    private lateinit var tvDone: TextView
+    private lateinit var tvWelcome: TextView
     private lateinit var layoutStats: LinearLayout
 
-    private var targetEmail: String = ""
+    private var filterType: String = "ALL" // ALL, PENDING, DONE
     private var adminEmail: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Kita gunakan layout yang sama dengan HomeActivity karena strukturnya mirip
         setContentView(R.layout.activity_home)
 
         db = DatabaseHelper(this)
 
         adminEmail = intent.getStringExtra("EXTRA_ADMIN_EMAIL") ?: ""
-        targetEmail = intent.getStringExtra("EXTRA_TARGET_EMAIL") ?: ""
+        filterType = intent.getStringExtra("EXTRA_FILTER") ?: "ALL"
 
-        val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        tvPending = findViewById(R.id.tvPendingCount)
-        tvDone = findViewById(R.id.tvDoneCount)
-        layoutStats = findViewById(R.id.layoutStats)
-        
-        // Sembunyikan elemen User (Logout, BottomNav, FAB)
-        findViewById<android.view.View>(R.id.btnLogout).visibility = android.view.View.GONE
-        findViewById<android.view.View>(R.id.bottomNavUser).visibility = android.view.View.GONE
-        findViewById<android.view.View>(R.id.fabAdd).visibility = android.view.View.GONE
-
+        tvWelcome = findViewById(R.id.tvWelcome)
         rvTasks = findViewById(R.id.rvTasks)
+        layoutStats = findViewById(R.id.layoutStats)
 
-        val username = db.getUsername(targetEmail)
-        tvWelcome.text = "Managing User: $username"
+        // Sembunyikan elemen User & Stats yang tidak perlu
+        findViewById<View>(R.id.btnLogout).visibility = View.GONE
+        findViewById<View>(R.id.bottomNavUser).visibility = View.GONE
+        findViewById<View>(R.id.fabAdd).visibility = View.GONE
+        layoutStats.visibility = View.GONE // Hide user stats layout
 
-        // ADMIN VIEW: Stats terlihat
-        layoutStats.visibility = android.view.View.VISIBLE
+        // Custom Title
+        val filterName = when(filterType) {
+            "PENDING" -> "Pending Tasks"
+            "DONE" -> "Completed Tasks"
+            else -> "All Tasks"
+        }
+        tvWelcome.text = filterName
+        
+        val subtitle = findViewById<TextView>(R.id.tvSubtitleHome)
+        subtitle.text = "Menampilkan semua tugas dari seluruh user"
 
         setupRecyclerView()
         loadTasks()
     }
 
     private fun setupRecyclerView() {
-        // ADMIN MODE: isEditable = true (Admin bisa ubah status)
         taskAdapter = TaskAdapter(
             ArrayList(),
             onTaskClick = { task -> 
@@ -76,58 +75,47 @@ class AdminUserTasksActivity : AppCompatActivity() {
             onDelete = { task ->
                 showDeleteConfirmation(task)
             },
-            isEditable = true // FITUR UTAMA: Checkbox Enabled untuk Admin
+            isEditable = true
         )
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = taskAdapter
     }
 
     private fun loadTasks() {
-        if (targetEmail.isNotEmpty()) {
-            val tasks = db.getUserTasks(targetEmail)
-            taskAdapter.updateData(tasks)
-            loadDashboardStats()
-        }
-    }
-
-    private fun loadDashboardStats() {
-        if (targetEmail.isNotEmpty()) {
-            val stats = db.getTaskCounts(targetEmail)
-            tvPending.text = stats.first.toString()
-            tvDone.text = stats.second.toString()
-        }
+        val tasks = db.getAllTasksWithUsernames(filterType)
+        taskAdapter.updateData(tasks)
     }
 
     private fun showStatusChangeConfirmation(task: TaskModel, isDone: Boolean) {
         val statusText = if (isDone) "SELESAI (Done)" else "PENDING"
-        val message = "Apakah Anda yakin ingin mengubah status tugas '${task.taskName}' menjadi $statusText?"
+        val message = "Ubah status tugas '${task.taskName}' milik ${task.ownerName} menjadi $statusText?"
 
         AlertDialog.Builder(this)
-            .setTitle("Konfirmasi Status (Admin)")
+            .setTitle("Konfirmasi Status")
             .setMessage(message)
-            .setPositiveButton("Ya, Ubah") { _, _ ->
+            .setPositiveButton("Ya") { _, _ ->
                 db.updateTaskStatus(task.id, isDone)
-                loadTasks() // Refresh data dan stats
-                Toast.makeText(this, "Status berhasil diubah menjadi $statusText", Toast.LENGTH_SHORT).show()
+                loadTasks()
+                Toast.makeText(this, "Status diperbarui", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()
-                loadTasks() // Revert tampilan checkbox ke posisi semula
+                loadTasks() // Revert
             }
-            .setCancelable(false) // Paksa user memilih
+            .setCancelable(false)
             .show()
     }
-
+    
     private fun showDeleteConfirmation(task: TaskModel) {
-        val message = "Hapus tugas '${task.taskName}' milik user ini?"
+        val message = "Hapus tugas '${task.taskName}' milik ${task.ownerName}?"
 
         AlertDialog.Builder(this)
-            .setTitle("Hapus Tugas (Admin)")
+            .setTitle("Hapus Tugas")
             .setMessage(message)
             .setPositiveButton("Hapus") { _, _ ->
                 db.deleteTask(task.id)
                 loadTasks()
-                Toast.makeText(this, "Tugas dihapus oleh Admin", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Tugas dihapus", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal", null)
             .show()

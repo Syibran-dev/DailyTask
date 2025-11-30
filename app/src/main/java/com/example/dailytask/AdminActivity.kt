@@ -15,6 +15,8 @@ class AdminActivity : AppCompatActivity() {
     private lateinit var db: DatabaseHelper
     private lateinit var tvTotalUsersCount: TextView
     private lateinit var tvTotalLogsCount: TextView
+    private lateinit var tvGlobalPendingCount: TextView
+    private lateinit var tvGlobalDoneCount: TextView
     private var adminEmail: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +24,6 @@ class AdminActivity : AppCompatActivity() {
 
         db = DatabaseHelper(this)
 
-        // 1. TANGKAP EMAIL & CEK SECURITY WAJIB
         val passedEmail = intent.getStringExtra("EXTRA_EMAIL")
         adminEmail = passedEmail ?: ""
 
@@ -35,7 +36,6 @@ class AdminActivity : AppCompatActivity() {
             return
         }
 
-        // LANJUTKAN JIKA LOLOS KEAMANAN
         setContentView(R.layout.activity_admin)
 
         val username = intent.getStringExtra("EXTRA_USERNAME") ?: "Admin"
@@ -44,15 +44,22 @@ class AdminActivity : AppCompatActivity() {
 
         tvTotalUsersCount = findViewById(R.id.tvTotalUsersCount)
         tvTotalLogsCount = findViewById(R.id.tvTotalLogsCount)
+        tvGlobalPendingCount = findViewById(R.id.tvGlobalPendingCount)
+        tvGlobalDoneCount = findViewById(R.id.tvGlobalDoneCount)
+
         val cardManageUsers = findViewById<CardView>(R.id.cardManageUsers)
         val cardSettings = findViewById<CardView>(R.id.cardSettings)
+        
+        // NEW: Get reference to the stats cards
+        val cardStatsPending = findViewById<CardView>(R.id.cardStatsPending)
+        val cardStatsDone = findViewById<CardView>(R.id.cardStatsDone)
+        
         bottomNavAdmin = findViewById(R.id.bottomNavAdmin)
 
         tvTitle.text = getString(R.string.home_welcome_greeting, username)
 
         updateDashboardStats()
 
-        // 2. Logic Logout
         btnLogout.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -60,21 +67,33 @@ class AdminActivity : AppCompatActivity() {
             Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
         }
 
-        // 3. Logic Tombol Kartu (Menu Tengah)
         cardManageUsers.setOnClickListener {
             startActivity(Intent(this, ManageUsersActivity::class.java).apply {
                 putExtra("EXTRA_EMAIL", adminEmail)
             })
         }
 
-        // FIX: Kirimkan EXTRA_EMAIL saat klik card Settings
         cardSettings.setOnClickListener {
             startActivity(Intent(this, SystemLogsActivity::class.java).apply {
                 putExtra("EXTRA_EMAIL", adminEmail)
             })
         }
+        
+        // CLICK LISTENERS FOR GLOBAL STATS CARDS
+        cardStatsPending.setOnClickListener {
+            startActivity(Intent(this, AdminGlobalTasksActivity::class.java).apply {
+                putExtra("EXTRA_ADMIN_EMAIL", adminEmail)
+                putExtra("EXTRA_FILTER", "PENDING")
+            })
+        }
+        
+        cardStatsDone.setOnClickListener {
+            startActivity(Intent(this, AdminGlobalTasksActivity::class.java).apply {
+                putExtra("EXTRA_ADMIN_EMAIL", adminEmail)
+                putExtra("EXTRA_FILTER", "DONE")
+            })
+        }
 
-        // 4. Logic Bottom Navigation (Navigasi Utama)
         bottomNavAdmin.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_admin_dashboard -> true
@@ -85,7 +104,6 @@ class AdminActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_admin_logs -> {
-                    // FIX: Kirimkan EXTRA_EMAIL saat klik Bottom Nav Logs
                     startActivity(Intent(this, SystemLogsActivity::class.java).apply {
                         putExtra("EXTRA_EMAIL", adminEmail)
                     })
@@ -108,7 +126,11 @@ class AdminActivity : AppCompatActivity() {
     private fun updateDashboardStats() {
         val userCount = db.getUserCount()
         val logCount = db.getAllLogs().size
+        val taskCounts = db.getGlobalTaskCounts()
+
         tvTotalUsersCount.text = userCount.toString()
         tvTotalLogsCount.text = logCount.toString()
+        tvGlobalPendingCount.text = taskCounts.first.toString()
+        tvGlobalDoneCount.text = taskCounts.second.toString()
     }
 }

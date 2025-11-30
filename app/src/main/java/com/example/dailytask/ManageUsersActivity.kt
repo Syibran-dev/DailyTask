@@ -98,7 +98,7 @@ class ManageUsersActivity : AppCompatActivity() {
                 } else {
                     tvRole.setBackgroundColor(context.getColor(android.R.color.darker_gray))
                     tvRole.setTextColor(context.getColor(android.R.color.white))
-                    imgIcon.setColorFilter(context.getColor(R.color.purple_500))
+                    imgIcon.setColorFilter(context.getColor(android.R.color.holo_purple))
                 }
 
                 return view

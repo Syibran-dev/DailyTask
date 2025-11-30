@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     android:background="#FAFAFA">
 
+    <!-- BACKGROUND LOGO WATERMARK -->
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/ic_daily"
+        android:alpha="0.05"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="@null" />
+
     <ImageView
         android:id="@+id/viewHeader"
         android:layout_width="match_parent"
@@ -69,8 +82,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cardProfile" />
 
+    <!-- FIX: Renamed ID from layoutDashboard to layoutStats to match Kotlin code -->
     <LinearLayout
-        android:id="@+id/layoutDashboard"
+        android:id="@+id/layoutStats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -137,7 +151,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutDashboard" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutStats" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTasks"

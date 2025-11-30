@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama Pengguna">
+        
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEditName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Pilih Avatar"
+        android:textStyle="bold"/>
+        
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp">
+        
+        <ImageView
+            android:id="@+id/imgOptionDefault"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            app:tint="#6A11CB"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+            
+        <ImageView
+            android:id="@+id/imgOption1"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="#6A11CB"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+            
+        <ImageView
+            android:id="@+id/imgOption2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:src="@android:drawable/ic_menu_camera"
+            app:tint="#6A11CB"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+            
+        <ImageView
+            android:id="@+id/imgOption3"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:src="@android:drawable/ic_menu_compass"
+            app:tint="#6A11CB"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+            
+    </LinearLayout>
+
+</LinearLayout>

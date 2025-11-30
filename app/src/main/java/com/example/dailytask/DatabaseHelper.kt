@@ -8,22 +8,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-// FINAL VERSION 6
+// FINAL VERSION 7 - Added avatar_id to users
 class DatabaseHelper(context: Context)
-    : SQLiteOpenHelper(context, "DailyTask.db", null, 6) {
+    : SQLiteOpenHelper(context, "DailyTask.db", null, 7) {
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT)")
+        // users table now has avatar_id (0-3 represents different icons)
+        db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT, avatar_id INTEGER DEFAULT 0)")
         db?.execSQL("CREATE TABLE logs(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, created_at TEXT)")
-        // Updated table schema
         db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER, task_date TEXT, task_desc TEXT)")
 
         seedAdminAccount(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // Simple upgrade strategy: Drop and recreate.
-        // WARNING: This deletes data. For production, use ALTER TABLE.
         db?.execSQL("DROP TABLE IF EXISTS users")
         db?.execSQL("DROP TABLE IF EXISTS logs")
         db?.execSQL("DROP TABLE IF EXISTS tasks")
@@ -36,6 +34,7 @@ class DatabaseHelper(context: Context)
         values.put("username", "System Admin")
         values.put("password", "123456")
         values.put("role", "admin")
+        values.put("avatar_id", 0)
         db?.insert("users", null, values)
     }
 
@@ -46,6 +45,7 @@ class DatabaseHelper(context: Context)
         values.put("username", username)
         values.put("password", password)
         values.put("role", role)
+        values.put("avatar_id", 0) // Default avatar
 
         val res = db.insert("users", null, values)
         if (res != -1L) {
@@ -88,6 +88,26 @@ class DatabaseHelper(context: Context)
         }
         cursor.close()
         return role
+    }
+
+    fun getUserAvatar(email: String): Int {
+        val db = readableDatabase
+        var avatarId = 0
+        val cursor = db.rawQuery("SELECT avatar_id FROM users WHERE email=?", arrayOf(email))
+        if (cursor.moveToFirst()) {
+            avatarId = cursor.getInt(0)
+        }
+        cursor.close()
+        return avatarId
+    }
+
+    fun updateProfile(email: String, newUsername: String, newAvatarId: Int): Boolean {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("username", newUsername)
+        values.put("avatar_id", newAvatarId)
+        val rows = db.update("users", values, "email=?", arrayOf(email))
+        return rows > 0
     }
 
     fun addLog(message: String) {
@@ -165,7 +185,40 @@ class DatabaseHelper(context: Context)
                 val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
                 val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
                 
-                list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: ""))
+                // ownerName default empty for normal user view
+                list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: "", ""))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+    
+    // New Method: Get ALL tasks from ALL users for Admin Global View
+    fun getAllTasksWithUsernames(filter: String = "ALL"): ArrayList<TaskModel> {
+        val list = ArrayList<TaskModel>()
+        val db = readableDatabase
+        
+        // Simple join to get username from users table
+        var query = "SELECT tasks.*, users.username FROM tasks LEFT JOIN users ON tasks.email_user = users.email"
+        
+        if (filter == "PENDING") {
+            query += " WHERE tasks.is_done = 0"
+        } else if (filter == "DONE") {
+            query += " WHERE tasks.is_done = 1"
+        }
+        query += " ORDER BY tasks.id DESC"
+
+        val cursor = db.rawQuery(query, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("task_name"))
+                val isDoneInt = cursor.getInt(cursor.getColumnIndexOrThrow("is_done"))
+                val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
+                val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
+                val owner = try { cursor.getString(cursor.getColumnIndexOrThrow("username")) } catch (e: Exception) { "Unknown" }
+                
+                list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: "", owner ?: "Unknown"))
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -194,6 +247,22 @@ class DatabaseHelper(context: Context)
         curPending.close()
 
         val curDone = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE email_user=? AND is_done=1", arrayOf(emailUser))
+        if (curDone.moveToFirst()) done = curDone.getInt(0)
+        curDone.close()
+
+        return Pair(pending, done)
+    }
+    
+    fun getGlobalTaskCounts(): Pair<Int, Int> {
+        val db = readableDatabase
+        var pending = 0
+        var done = 0
+
+        val curPending = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE is_done=0", null)
+        if (curPending.moveToFirst()) pending = curPending.getInt(0)
+        curPending.close()
+
+        val curDone = db.rawQuery("SELECT COUNT(*) FROM tasks WHERE is_done=1", null)
         if (curDone.moveToFirst()) done = curDone.getInt(0)
         curDone.close()
 

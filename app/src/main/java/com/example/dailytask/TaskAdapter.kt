@@ -14,13 +14,13 @@ class TaskAdapter(
     private val onTaskClick: (TaskModel) -> Unit,
     private val onStatusChange: (TaskModel, Boolean) -> Unit,
     private val onDelete: (TaskModel) -> Unit,
-    private val isEditable: Boolean = true // Parameter baru, default true
+    private val isEditable: Boolean = true 
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cbTask: CheckBox = itemView.findViewById(R.id.cbTask)
         val tvTaskName: TextView = itemView.findViewById(R.id.tvTaskName)
-        val tvTaskDate: TextView? = itemView.findViewById(R.id.tvTaskDate) // Optional jika ada di layout
+        val tvTaskDate: TextView? = itemView.findViewById(R.id.tvTaskDate) 
         val btnDelete: ImageView = itemView.findViewById(R.id.btnDeleteTask)
     }
 
@@ -32,14 +32,25 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = taskList[position]
 
-        holder.tvTaskName.text = task.taskName
+        // SHOW OWNER NAME IF AVAILABLE (For Global Admin View)
+        if (task.ownerName.isNotEmpty()) {
+            holder.tvTaskName.text = "${task.taskName} (${task.ownerName})"
+        } else {
+            holder.tvTaskName.text = task.taskName
+        }
+
+        // Clear listener before setting state to avoid triggering callback
+        holder.cbTask.setOnCheckedChangeListener(null)
         holder.cbTask.isChecked = task.isDone
-        // Disable checkbox if not editable
         holder.cbTask.isEnabled = isEditable
         
-        // Tampilkan tanggal jika viewnya ada (untuk future proofing layout item_task)
-        if (task.taskDate.isNotEmpty()) {
-             holder.tvTaskName.text = "${task.taskName} (${task.taskDate})"
+        if (holder.tvTaskDate != null) {
+            if (task.taskDate.isNotEmpty()) {
+                holder.tvTaskDate.visibility = View.VISIBLE
+                holder.tvTaskDate.text = task.taskDate
+            } else {
+                holder.tvTaskDate.visibility = View.GONE
+            }
         }
 
         updateStrikeThrough(holder.tvTaskName, task.isDone)
@@ -48,12 +59,12 @@ class TaskAdapter(
             onTaskClick(task)
         }
 
+        // Set listener back
         holder.cbTask.setOnCheckedChangeListener { _, isChecked ->
-            if (isEditable) { // Pastikan hanya trigger jika editable
+            if (isEditable) { 
                 updateStrikeThrough(holder.tvTaskName, isChecked)
                 onStatusChange(task, isChecked)
             } else {
-                // Jika user mencoba klik (walaupun disabled, just safety)
                 holder.cbTask.isChecked = !isChecked 
             }
         }
@@ -61,10 +72,6 @@ class TaskAdapter(
         holder.btnDelete.setOnClickListener {
             onDelete(task)
         }
-        
-        // Hide delete button if not editable (User view) -> User can delete their own tasks? 
-        // Prompt says "user tambah tugas... admin menentukan selesai".
-        // Usually users can delete what they created. I will keep delete enabled for now.
     }
 
     private fun updateStrikeThrough(textView: TextView, isDone: Boolean) {
