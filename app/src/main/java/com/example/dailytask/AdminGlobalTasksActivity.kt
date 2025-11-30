@@ -88,15 +88,20 @@ class AdminGlobalTasksActivity : AppCompatActivity() {
 
     private fun showStatusChangeConfirmation(task: TaskModel, isDone: Boolean) {
         val statusText = if (isDone) "SELESAI (Done)" else "PENDING"
-        val message = "Ubah status tugas '${task.taskName}' milik ${task.ownerName} menjadi $statusText?"
+        val message = "Tindakan untuk tugas '${task.taskName}' milik ${task.ownerName}?"
 
         AlertDialog.Builder(this)
             .setTitle("Konfirmasi Status")
             .setMessage(message)
-            .setPositiveButton("Ya") { _, _ ->
+            .setPositiveButton("Ubah ke $statusText") { _, _ ->
                 db.updateTaskStatus(task.id, isDone)
                 loadTasks()
                 Toast.makeText(this, "Status diperbarui", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Hapus Tugas") { _, _ ->
+                db.deleteTask(task.id)
+                loadTasks()
+                Toast.makeText(this, "Tugas dihapus", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()

@@ -82,7 +82,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cardProfile" />
 
-    <!-- FIX: Renamed ID from layoutDashboard to layoutStats to match Kotlin code -->
     <LinearLayout
         android:id="@+id/layoutStats"
         android:layout_width="match_parent"
@@ -110,7 +109,7 @@
                     android:src="@android:drawable/ic_popup_sync" app:tint="#F44336"
                     android:contentDescription="@string/desc_icon_pending" android:layout_gravity="end"/>
                 <TextView android:id="@+id/tvPendingCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/default_count_pending" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#F44336"/>
+                    android:text="@string/default_count_pending" android:textSize="36sp" android:textStyle="bold" android:textColor="#F44336"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_pending_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#D32F2F"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -134,7 +133,7 @@
                     android:src="@android:drawable/checkbox_on_background" app:tint="#4CAF50"
                     android:contentDescription="@string/desc_icon_done" android:layout_gravity="end"/>
                 <TextView android:id="@+id/tvDoneCount" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/default_count_done" android:textSize="36sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:textColor="#4CAF50"/>
+                    android:text="@string/default_count_done" android:textSize="36sp" android:textStyle="bold" android:textColor="#4CAF50"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_done_label" android:textSize="14sp" android:textStyle="bold" android:layout_marginTop="4dp" android:textColor="#388E3C"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

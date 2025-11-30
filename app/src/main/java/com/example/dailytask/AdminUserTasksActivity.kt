@@ -100,15 +100,22 @@ class AdminUserTasksActivity : AppCompatActivity() {
 
     private fun showStatusChangeConfirmation(task: TaskModel, isDone: Boolean) {
         val statusText = if (isDone) "SELESAI (Done)" else "PENDING"
-        val message = "Apakah Anda yakin ingin mengubah status tugas '${task.taskName}' menjadi $statusText?"
+        val message = "Tindakan untuk tugas '${task.taskName}'?"
 
         AlertDialog.Builder(this)
-            .setTitle("Konfirmasi Status (Admin)")
+            .setTitle("Konfirmasi Admin")
             .setMessage(message)
-            .setPositiveButton("Ya, Ubah") { _, _ ->
+            .setPositiveButton("Ubah ke $statusText") { _, _ ->
                 db.updateTaskStatus(task.id, isDone)
                 loadTasks() // Refresh data dan stats
                 Toast.makeText(this, "Status berhasil diubah menjadi $statusText", Toast.LENGTH_SHORT).show()
+            }
+            .setNeutralButton("Hapus Tugas") { _, _ ->
+                // Arahkan ke konfirmasi hapus atau hapus langsung?
+                // Hapus langsung karena ini sudah dalam dialog konfirmasi admin
+                db.deleteTask(task.id)
+                loadTasks()
+                Toast.makeText(this, "Tugas dihapus", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()
