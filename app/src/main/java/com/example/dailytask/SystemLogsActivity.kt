@@ -1,5 +1,6 @@
 package com.example.dailytask
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,11 +12,13 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class SystemLogsActivity : AppCompatActivity() {
 
     private lateinit var db: DatabaseHelper
     private lateinit var bottomNavAdmin: BottomNavigationView
+    private lateinit var listView: ListView
     private var adminEmail: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +36,17 @@ class SystemLogsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_list)
 
         val tvTitle = findViewById<TextView>(R.id.tvPageTitle)
-        val listView = findViewById<ListView>(R.id.listViewData)
+        listView = findViewById(R.id.listViewData)
         bottomNavAdmin = findViewById(R.id.bottomNavAdmin)
+        val fabAction = findViewById<FloatingActionButton>(R.id.fabAction)
 
         tvTitle.text = "Log Aktivitas Sistem"
+        
+        // Show FAB for clearing logs
+        fabAction.visibility = View.VISIBLE
+        fabAction.setOnClickListener {
+             showClearLogsConfirmation()
+        }
 
         // Setup Bottom Navigation
         bottomNavAdmin.setOnItemSelectedListener { item ->
@@ -56,13 +66,16 @@ class SystemLogsActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_admin_logs -> true // Sudah di sini
+                R.id.nav_admin_logs -> true 
                 else -> false
             }
         }
         bottomNavAdmin.selectedItemId = R.id.nav_admin_logs
 
-        // Load Logs
+        loadLogs()
+    }
+    
+    private fun loadLogs() {
         val rawLogList = db.getAllLogs()
 
         val adapter = object : ArrayAdapter<String>(this, 0, rawLogList) {
@@ -86,5 +99,18 @@ class SystemLogsActivity : AppCompatActivity() {
 
         listView.adapter = adapter
         listView.divider = null
+    }
+    
+    private fun showClearLogsConfirmation() {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Semua Log")
+            .setMessage("Apakah Anda yakin ingin menghapus semua data log aktivitas?")
+            .setPositiveButton("Hapus") { _, _ ->
+                db.clearAllLogs()
+                loadLogs()
+                Toast.makeText(this, "Semua log berhasil dihapus", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 }

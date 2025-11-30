@@ -1,5 +1,6 @@
 package com.example.dailytask
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -50,7 +51,6 @@ class AdminActivity : AppCompatActivity() {
         val cardManageUsers = findViewById<CardView>(R.id.cardManageUsers)
         val cardSettings = findViewById<CardView>(R.id.cardSettings)
         
-        // NEW: Get reference to the stats cards
         val cardStatsPending = findViewById<CardView>(R.id.cardStatsPending)
         val cardStatsDone = findViewById<CardView>(R.id.cardStatsDone)
         
@@ -61,10 +61,7 @@ class AdminActivity : AppCompatActivity() {
         updateDashboardStats()
 
         btnLogout.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
+            showLogoutConfirmation()
         }
 
         cardManageUsers.setOnClickListener {
@@ -79,7 +76,6 @@ class AdminActivity : AppCompatActivity() {
             })
         }
         
-        // CLICK LISTENERS FOR GLOBAL STATS CARDS
         cardStatsPending.setOnClickListener {
             startActivity(Intent(this, AdminGlobalTasksActivity::class.java).apply {
                 putExtra("EXTRA_ADMIN_EMAIL", adminEmail)
@@ -132,5 +128,19 @@ class AdminActivity : AppCompatActivity() {
         tvTotalLogsCount.text = logCount.toString()
         tvGlobalPendingCount.text = taskCounts.first.toString()
         tvGlobalDoneCount.text = taskCounts.second.toString()
+    }
+    
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Logout")
+            .setMessage("Apakah Anda yakin ingin keluar dari Mode Admin?")
+            .setPositiveButton("Logout") { _, _ ->
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 }

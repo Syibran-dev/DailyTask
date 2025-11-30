@@ -26,7 +26,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var tvPending: TextView
     private lateinit var tvDone: TextView
     private lateinit var bottomNavUser: BottomNavigationView
-    private lateinit var layoutStats: LinearLayout // Container statistik
+    private lateinit var layoutStats: LinearLayout 
 
     private var userEmail: String = ""
 
@@ -54,13 +54,12 @@ class HomeActivity : AppCompatActivity() {
 
         setupRecyclerView()
         loadTasks()
+        checkAdminUpdates()
 
         btnLogout.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            Toast.makeText(this, getString(R.string.toast_logout_success), Toast.LENGTH_SHORT).show()
+            showLogoutConfirmation()
         }
+        
         fabAdd.setOnClickListener { showAddTaskDialog() }
 
         bottomNavUser.setOnItemSelectedListener { item ->
@@ -80,6 +79,26 @@ class HomeActivity : AppCompatActivity() {
         }
 
         bottomNavUser.selectedItemId = R.id.nav_tasks
+    }
+    
+    private fun checkAdminUpdates() {
+        if (userEmail.isNotEmpty()) {
+            val updates = db.getUnseenAdminUpdates(userEmail)
+            if (updates.isNotEmpty()) {
+                val sb = StringBuilder("Tugas berikut telah diselesaikan oleh Admin:\n")
+                for (taskName in updates) {
+                    sb.append("- $taskName\n")
+                }
+                
+                AlertDialog.Builder(this)
+                    .setTitle("Update Status")
+                    .setMessage(sb.toString())
+                    .setPositiveButton("OK") { _, _ ->
+                        db.markUpdatesAsSeen(userEmail)
+                    }
+                    .show()
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -118,7 +137,6 @@ class HomeActivity : AppCompatActivity() {
     private fun showAddTaskDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_task, null)
         val etTaskName = dialogView.findViewById<TextInputEditText>(R.id.etTaskName)
-        // Ganti referensi dari etTaskDate tunggal ke Day, Month, Year
         val etDay = dialogView.findViewById<TextInputEditText>(R.id.etDay)
         val etMonth = dialogView.findViewById<TextInputEditText>(R.id.etMonth)
         val etYear = dialogView.findViewById<TextInputEditText>(R.id.etYear)
@@ -134,16 +152,13 @@ class HomeActivity : AppCompatActivity() {
                 val year = etYear.text.toString().trim()
                 val taskDesc = etTaskDesc.text.toString().trim()
 
-                // Gabungkan menjadi string tanggal
                 val taskDate = if (day.isNotEmpty() && month.isNotEmpty() && year.isNotEmpty()) {
-                    // Format sederhana: DD/MM/YYYY
                     "$day/$month/$year"
                 } else {
                     ""
                 }
 
                 if (taskName.isNotEmpty()) {
-                    // Pastikan tanggal diisi jika user ingin
                     if (taskDate.isEmpty() && (day.isNotEmpty() || month.isNotEmpty() || year.isNotEmpty())) {
                          Toast.makeText(this, "Format tanggal tidak lengkap!", Toast.LENGTH_SHORT).show()
                          return@setPositiveButton
@@ -170,6 +185,20 @@ class HomeActivity : AppCompatActivity() {
                 db.deleteTask(task.id)
                 loadTasks()
                 Toast.makeText(this, getString(R.string.toast_task_deleted), Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Logout")
+            .setMessage("Apakah Anda yakin ingin keluar?")
+            .setPositiveButton("Logout") { _, _ ->
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                Toast.makeText(this, getString(R.string.toast_logout_success), Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal", null)
             .show()

@@ -35,13 +35,11 @@ class AdminGlobalTasksActivity : AppCompatActivity() {
         rvTasks = findViewById(R.id.rvTasks)
         layoutStats = findViewById(R.id.layoutStats)
 
-        // Sembunyikan elemen User & Stats yang tidak perlu
         findViewById<View>(R.id.btnLogout).visibility = View.GONE
         findViewById<View>(R.id.bottomNavUser).visibility = View.GONE
         findViewById<View>(R.id.fabAdd).visibility = View.GONE
-        layoutStats.visibility = View.GONE // Hide user stats layout
+        layoutStats.visibility = View.GONE 
 
-        // Custom Title
         val filterName = when(filterType) {
             "PENDING" -> "Pending Tasks"
             "DONE" -> "Completed Tasks"
@@ -94,7 +92,8 @@ class AdminGlobalTasksActivity : AppCompatActivity() {
             .setTitle("Konfirmasi Status")
             .setMessage(message)
             .setPositiveButton("Ubah ke $statusText") { _, _ ->
-                db.updateTaskStatus(task.id, isDone)
+                // is Admin = true to trigger notification logic in DB
+                db.updateTaskStatus(task.id, isDone, isAdmin = true)
                 loadTasks()
                 Toast.makeText(this, "Status diperbarui", Toast.LENGTH_SHORT).show()
             }
@@ -105,7 +104,7 @@ class AdminGlobalTasksActivity : AppCompatActivity() {
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()
-                loadTasks() // Revert
+                loadTasks() 
             }
             .setCancelable(false)
             .show()

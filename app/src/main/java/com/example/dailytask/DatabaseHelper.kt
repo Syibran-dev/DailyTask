@@ -8,15 +8,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-// FINAL VERSION 7 - Added avatar_id to users
+// VERSION 8 - Added updated_by_admin to tasks
 class DatabaseHelper(context: Context)
-    : SQLiteOpenHelper(context, "DailyTask.db", null, 7) {
+    : SQLiteOpenHelper(context, "DailyTask.db", null, 8) {
 
     override fun onCreate(db: SQLiteDatabase?) {
-        // users table now has avatar_id (0-3 represents different icons)
         db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT, avatar_id INTEGER DEFAULT 0)")
         db?.execSQL("CREATE TABLE logs(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, created_at TEXT)")
-        db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER, task_date TEXT, task_desc TEXT)")
+        // Added updated_by_admin: 0 = no, 1 = yes
+        db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER, task_date TEXT, task_desc TEXT, updated_by_admin INTEGER DEFAULT 0)")
 
         seedAdminAccount(db)
     }
@@ -119,6 +119,9 @@ class DatabaseHelper(context: Context)
         db.insert("logs", null, values)
     }
 
+    // Modified to return Pair of ID and String so we can delete individually if needed, 
+    // but existing UI uses String. For now, keeping String list for compatibility, 
+    // but adding clearAllLogs.
     fun getAllLogs(): ArrayList<String> {
         val list = ArrayList<String>()
         val db = readableDatabase
@@ -132,6 +135,11 @@ class DatabaseHelper(context: Context)
         }
         cursor.close()
         return list
+    }
+    
+    fun clearAllLogs() {
+        val db = writableDatabase
+        db.delete("logs", null, null)
     }
 
     fun getAllUsers(): ArrayList<String> {
@@ -169,6 +177,7 @@ class DatabaseHelper(context: Context)
         values.put("is_done", 0)
         values.put("task_date", taskDate)
         values.put("task_desc", taskDesc)
+        values.put("updated_by_admin", 0)
         val res = db.insert("tasks", null, values)
         return res != -1L
     }
@@ -185,7 +194,6 @@ class DatabaseHelper(context: Context)
                 val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
                 val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
                 
-                // ownerName default empty for normal user view
                 list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: "", ""))
             } while (cursor.moveToNext())
         }
@@ -193,12 +201,10 @@ class DatabaseHelper(context: Context)
         return list
     }
     
-    // New Method: Get ALL tasks from ALL users for Admin Global View
     fun getAllTasksWithUsernames(filter: String = "ALL"): ArrayList<TaskModel> {
         val list = ArrayList<TaskModel>()
         val db = readableDatabase
         
-        // Simple join to get username from users table
         var query = "SELECT tasks.*, users.username FROM tasks LEFT JOIN users ON tasks.email_user = users.email"
         
         if (filter == "PENDING") {
@@ -225,10 +231,14 @@ class DatabaseHelper(context: Context)
         return list
     }
 
-    fun updateTaskStatus(id: Int, isDone: Boolean) {
+    // Modified: isAdmin flag to track who updated it
+    fun updateTaskStatus(id: Int, isDone: Boolean, isAdmin: Boolean = false) {
         val db = writableDatabase
         val values = ContentValues()
         values.put("is_done", if (isDone) 1 else 0)
+        if (isAdmin) {
+            values.put("updated_by_admin", 1)
+        }
         db.update("tasks", values, "id=?", arrayOf(id.toString()))
     }
 
@@ -267,6 +277,27 @@ class DatabaseHelper(context: Context)
         curDone.close()
 
         return Pair(pending, done)
+    }
+
+    // New methods for User Notification
+    fun getUnseenAdminUpdates(emailUser: String): ArrayList<String> {
+        val list = ArrayList<String>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT task_name FROM tasks WHERE email_user=? AND updated_by_admin=1", arrayOf(emailUser))
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(0))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun markUpdatesAsSeen(emailUser: String) {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("updated_by_admin", 0)
+        db.update("tasks", values, "email_user=? AND updated_by_admin=1", arrayOf(emailUser))
     }
 
     fun updatePassword(email: String, newPass: String): Boolean {
