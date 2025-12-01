@@ -2,6 +2,7 @@ package com.example.dailytask
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
@@ -20,6 +21,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val etNewPassword = findViewById<TextInputEditText>(R.id.etFPNewPassword)
         val etConfirmPassword = findViewById<TextInputEditText>(R.id.etFPConfirmPassword)
         val btnReset = findViewById<Button>(R.id.btnResetPassword)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
+
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         btnReset.setOnClickListener {
             val email = etEmail.text.toString().trim()

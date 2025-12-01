@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -39,16 +40,19 @@ class SystemLogsActivity : AppCompatActivity() {
         listView = findViewById(R.id.listViewData)
         bottomNavAdmin = findViewById(R.id.bottomNavAdmin)
         val fabAction = findViewById<FloatingActionButton>(R.id.fabAction)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
 
         tvTitle.text = "Log Aktivitas Sistem"
         
-        // Show FAB for clearing logs
+        btnBack.setOnClickListener {
+            finish()
+        }
+        
         fabAction.visibility = View.VISIBLE
         fabAction.setOnClickListener {
              showClearLogsConfirmation()
         }
 
-        // Setup Bottom Navigation
         bottomNavAdmin.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_admin_dashboard -> {

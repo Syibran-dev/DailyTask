@@ -29,6 +29,36 @@
         android:background="@drawable/bg_login_gradient"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="@android:color/white"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="Back Button"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title Profile -->
+    <TextView
+        android:id="@+id/tvProfileTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Profil Saya"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack" />
+
     <!-- Profile Card -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardProfile"

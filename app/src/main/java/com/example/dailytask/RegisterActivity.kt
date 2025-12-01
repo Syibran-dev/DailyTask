@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
@@ -26,6 +27,11 @@ class RegisterActivity : AppCompatActivity() {
         val etAdminKey = findViewById<TextInputEditText>(R.id.etAdminKey)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         val tvLoginLink = findViewById<TextView>(R.id.tvLoginLink)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
+
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         tvLoginLink.setOnClickListener {
             finish()

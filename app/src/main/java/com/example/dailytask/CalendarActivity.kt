@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.CalendarView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -28,8 +29,13 @@ class CalendarActivity : AppCompatActivity() {
 
         val calendarView = findViewById<CalendarView>(R.id.calendarView)
         val tvSelectedDate = findViewById<TextView>(R.id.tvSelectedDate)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
         rvCalendarTasks = findViewById(R.id.rvCalendarTasks)
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage)
+
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         setupRecyclerView()
         loadAllTasks()

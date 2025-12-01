@@ -35,30 +35,31 @@ class ManageUsersActivity : AppCompatActivity() {
 
         val tvTitle = findViewById<TextView>(R.id.tvPageTitle)
         val listView = findViewById<ListView>(R.id.listViewData)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
         bottomNavAdmin = findViewById(R.id.bottomNavAdmin)
 
         tvTitle.text = "Kelola Pengguna"
 
-        // Setup Bottom Navigation agar konsisten
+        btnBack.setOnClickListener {
+            finish()
+        }
+
         bottomNavAdmin.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_admin_dashboard -> {
-                    // Kembali ke Dashboard, clear top agar tidak menumpuk
                     val intent = Intent(this, AdminActivity::class.java)
                     intent.putExtra("EXTRA_EMAIL", adminEmail)
-                    // Kita tidak perlu EXTRA_USERNAME karena AdminActivity akan load ulang atau simpan state
-                    // Tapi lebih baik jika AdminActivity mengambil username dari DB jika null
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     startActivity(intent)
-                    finish() // Tutup activity ini
+                    finish()
                     true
                 }
-                R.id.nav_admin_users -> true // Sudah di sini
+                R.id.nav_admin_users -> true
                 R.id.nav_admin_logs -> {
                     val intent = Intent(this, SystemLogsActivity::class.java)
                     intent.putExtra("EXTRA_EMAIL", adminEmail)
                     startActivity(intent)
-                    finish() // Pindah activity, tutup yang ini
+                    finish()
                     true
                 }
                 else -> false
@@ -66,7 +67,6 @@ class ManageUsersActivity : AppCompatActivity() {
         }
         bottomNavAdmin.selectedItemId = R.id.nav_admin_users
 
-        // Load Data Users
         val rawUserList = db.getAllUsers()
         
         val adapter = object : ArrayAdapter<String>(this, 0, rawUserList) {

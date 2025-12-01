@@ -25,7 +25,6 @@ class ProfileActivity : AppCompatActivity() {
 
         currentUserEmail = intent.getStringExtra("EXTRA_EMAIL") ?: ""
         
-        // Reload data terbaru dari DB agar up-to-date jika baru diedit
         val currentUsername = if (currentUserEmail.isNotEmpty()) db.getUsername(currentUserEmail) else "User"
         val currentAvatarId = if (currentUserEmail.isNotEmpty()) db.getUserAvatar(currentUserEmail) else 0
 
@@ -36,12 +35,16 @@ class ProfileActivity : AppCompatActivity() {
         val btnEditProfile = findViewById<Button>(R.id.btnEditProfile)
         val btnEditAvatar = findViewById<ImageView>(R.id.btnEditAvatar)
         val cardAppInfo = findViewById<CardView>(R.id.cardAppInfo)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
 
         tvUsername.text = currentUsername
         tvEmail.text = currentUserEmail
         
-        // Set Avatar Icon
         updateAvatarIcon(imgAvatar, currentAvatarId)
+
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         btnLogout.setOnClickListener {
             showLogoutConfirmation()
@@ -65,7 +68,7 @@ class ProfileActivity : AppCompatActivity() {
             1 -> android.R.drawable.ic_menu_myplaces
             2 -> android.R.drawable.ic_menu_camera
             3 -> android.R.drawable.ic_menu_compass
-            else -> android.R.drawable.sym_def_app_icon // Default
+            else -> android.R.drawable.sym_def_app_icon
         }
         imageView.setImageResource(iconRes)
     }
@@ -81,7 +84,6 @@ class ProfileActivity : AppCompatActivity() {
         etName.setText(currentName)
         var selectedAvatarId = currentAvatarId
 
-        // Helper untuk highlight pilihan
         fun updateSelection(id: Int) {
             selectedAvatarId = id
             imgOptionDefault.alpha = if (id == 0) 1.0f else 0.3f
@@ -104,7 +106,6 @@ class ProfileActivity : AppCompatActivity() {
                 if (newName.isNotEmpty()) {
                     if (db.updateProfile(currentUserEmail, newName, selectedAvatarId)) {
                         Toast.makeText(this, "Profil diperbarui!", Toast.LENGTH_SHORT).show()
-                        // Refresh Activity
                         finish()
                         startActivity(intent) 
                     } else {

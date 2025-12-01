@@ -2,6 +2,7 @@ package com.example.dailytask
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 
 class TaskDetailActivity : AppCompatActivity() {
@@ -18,11 +19,10 @@ class TaskDetailActivity : AppCompatActivity() {
         val tvDetailDate = findViewById<TextView>(R.id.tvDetailDate)
         val tvDetailDesc = findViewById<TextView>(R.id.tvDetailDesc)
         val tvDetailStatus = findViewById<TextView>(R.id.tvDetailStatus)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
 
         tvDetailName.text = taskName
         
-        // FIX: Menghapus prefix "Tenggat:" agar lebih rapi sesuai request.
-        // Layout XML sudah memiliki header "TANGGAL".
         tvDetailDate.text = if (taskDate.isNotEmpty()) taskDate else "-"
         
         tvDetailDesc.text = if (taskDesc.isNotEmpty()) taskDesc else "Tidak ada deskripsi."
@@ -30,5 +30,9 @@ class TaskDetailActivity : AppCompatActivity() {
         val statusText = if (isDone) "Selesai" else "Belum Selesai"
         tvDetailStatus.text = statusText
         tvDetailStatus.setTextColor(if (isDone) getColor(android.R.color.holo_green_dark) else getColor(android.R.color.holo_red_dark))
+
+        btnBack.setOnClickListener {
+            finish()
+        }
     }
 }
