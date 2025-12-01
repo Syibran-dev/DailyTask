@@ -26,7 +26,6 @@ class AdminUserTasksActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Kita gunakan layout yang sama dengan HomeActivity karena strukturnya mirip
         setContentView(R.layout.activity_home)
 
         db = DatabaseHelper(this)
@@ -39,7 +38,6 @@ class AdminUserTasksActivity : AppCompatActivity() {
         tvDone = findViewById(R.id.tvDoneCount)
         layoutStats = findViewById(R.id.layoutStats)
         
-        // Sembunyikan elemen User (Logout, BottomNav, FAB)
         findViewById<android.view.View>(R.id.btnLogout).visibility = android.view.View.GONE
         findViewById<android.view.View>(R.id.bottomNavUser).visibility = android.view.View.GONE
         findViewById<android.view.View>(R.id.fabAdd).visibility = android.view.View.GONE
@@ -49,7 +47,6 @@ class AdminUserTasksActivity : AppCompatActivity() {
         val username = db.getUsername(targetEmail)
         tvWelcome.text = "Managing User: $username"
 
-        // ADMIN VIEW: Stats terlihat
         layoutStats.visibility = android.view.View.VISIBLE
 
         setupRecyclerView()
@@ -57,7 +54,6 @@ class AdminUserTasksActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        // ADMIN MODE: isEditable = true (Admin bisa ubah status)
         taskAdapter = TaskAdapter(
             ArrayList(),
             onTaskClick = { task -> 
@@ -76,7 +72,7 @@ class AdminUserTasksActivity : AppCompatActivity() {
             onDelete = { task ->
                 showDeleteConfirmation(task)
             },
-            isEditable = true // FITUR UTAMA: Checkbox Enabled untuk Admin
+            isEditable = true
         )
         rvTasks.layoutManager = LinearLayoutManager(this)
         rvTasks.adapter = taskAdapter
@@ -107,21 +103,19 @@ class AdminUserTasksActivity : AppCompatActivity() {
             .setMessage(message)
             .setPositiveButton("Ubah ke $statusText") { _, _ ->
                 db.updateTaskStatus(task.id, isDone)
-                loadTasks() // Refresh data dan stats
+                loadTasks()
                 Toast.makeText(this, "Status berhasil diubah menjadi $statusText", Toast.LENGTH_SHORT).show()
             }
             .setNeutralButton("Hapus Tugas") { _, _ ->
-                // Arahkan ke konfirmasi hapus atau hapus langsung?
-                // Hapus langsung karena ini sudah dalam dialog konfirmasi admin
                 db.deleteTask(task.id)
                 loadTasks()
                 Toast.makeText(this, "Tugas dihapus", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("Batal") { dialog, _ ->
                 dialog.dismiss()
-                loadTasks() // Revert tampilan checkbox ke posisi semula
+                loadTasks()
             }
-            .setCancelable(false) // Paksa user memilih
+            .setCancelable(false)
             .show()
     }
 

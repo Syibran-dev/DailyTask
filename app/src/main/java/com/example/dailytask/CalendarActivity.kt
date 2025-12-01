@@ -34,11 +34,9 @@ class CalendarActivity : AppCompatActivity() {
         setupRecyclerView()
         loadAllTasks()
 
-        // Set default date text
         tvSelectedDate.text = "Pilih tanggal untuk melihat tugas"
 
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            // month is 0-based
             val displayDate = "$dayOfMonth/${month + 1}/$year"
             tvSelectedDate.text = "Tugas tanggal: $displayDate"
             
@@ -61,7 +59,6 @@ class CalendarActivity : AppCompatActivity() {
             },
             onStatusChange = { _, _ ->
                 Toast.makeText(this, "Hanya Admin yang bisa mengubah status!", Toast.LENGTH_SHORT).show()
-                // Reload status asli jika user mencoba ubah
                 taskAdapter.notifyDataSetChanged()
             },
             onDelete = { 
@@ -100,9 +97,6 @@ class CalendarActivity : AppCompatActivity() {
         }
     }
 
-    // Helper function to compare date string with selected integer date
-    // Handles "1/1/2023" matching day=1, month=1, year=2023
-    // Handles "01/01/2023" matching day=1, month=1, year=2023
     private fun isDateMatch(dateString: String, targetDay: Int, targetMonth: Int, targetYear: Int): Boolean {
         if (dateString.isEmpty()) return false
         
@@ -123,7 +117,6 @@ class CalendarActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
-        // Reload tasks in case they were modified in Detail or elsewhere
         loadAllTasks()
     }
 }

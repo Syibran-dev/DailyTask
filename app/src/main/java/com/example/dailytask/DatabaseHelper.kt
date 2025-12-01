@@ -8,14 +8,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-// VERSION 8 - Added updated_by_admin to tasks
 class DatabaseHelper(context: Context)
     : SQLiteOpenHelper(context, "DailyTask.db", null, 8) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, username TEXT, password TEXT, role TEXT, avatar_id INTEGER DEFAULT 0)")
         db?.execSQL("CREATE TABLE logs(id INTEGER PRIMARY KEY AUTOINCREMENT, message TEXT, created_at TEXT)")
-        // Added updated_by_admin: 0 = no, 1 = yes
         db?.execSQL("CREATE TABLE tasks(id INTEGER PRIMARY KEY AUTOINCREMENT, email_user TEXT, task_name TEXT, is_done INTEGER, task_date TEXT, task_desc TEXT, updated_by_admin INTEGER DEFAULT 0)")
 
         seedAdminAccount(db)
@@ -45,7 +43,7 @@ class DatabaseHelper(context: Context)
         values.put("username", username)
         values.put("password", password)
         values.put("role", role)
-        values.put("avatar_id", 0) // Default avatar
+        values.put("avatar_id", 0)
 
         val res = db.insert("users", null, values)
         if (res != -1L) {
@@ -119,9 +117,6 @@ class DatabaseHelper(context: Context)
         db.insert("logs", null, values)
     }
 
-    // Modified to return Pair of ID and String so we can delete individually if needed, 
-    // but existing UI uses String. For now, keeping String list for compatibility, 
-    // but adding clearAllLogs.
     fun getAllLogs(): ArrayList<String> {
         val list = ArrayList<String>()
         val db = readableDatabase
@@ -136,7 +131,7 @@ class DatabaseHelper(context: Context)
         cursor.close()
         return list
     }
-    
+
     fun clearAllLogs() {
         val db = writableDatabase
         db.delete("logs", null, null)
@@ -193,20 +188,20 @@ class DatabaseHelper(context: Context)
                 val isDoneInt = cursor.getInt(cursor.getColumnIndexOrThrow("is_done"))
                 val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
                 val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
-                
+
                 list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: "", ""))
             } while (cursor.moveToNext())
         }
         cursor.close()
         return list
     }
-    
+
     fun getAllTasksWithUsernames(filter: String = "ALL"): ArrayList<TaskModel> {
         val list = ArrayList<TaskModel>()
         val db = readableDatabase
-        
+
         var query = "SELECT tasks.*, users.username FROM tasks LEFT JOIN users ON tasks.email_user = users.email"
-        
+
         if (filter == "PENDING") {
             query += " WHERE tasks.is_done = 0"
         } else if (filter == "DONE") {
@@ -223,7 +218,7 @@ class DatabaseHelper(context: Context)
                 val date = try { cursor.getString(cursor.getColumnIndexOrThrow("task_date")) } catch (e: Exception) { "" }
                 val desc = try { cursor.getString(cursor.getColumnIndexOrThrow("task_desc")) } catch (e: Exception) { "" }
                 val owner = try { cursor.getString(cursor.getColumnIndexOrThrow("username")) } catch (e: Exception) { "Unknown" }
-                
+
                 list.add(TaskModel(id, name, isDoneInt == 1, date ?: "", desc ?: "", owner ?: "Unknown"))
             } while (cursor.moveToNext())
         }
@@ -231,7 +226,6 @@ class DatabaseHelper(context: Context)
         return list
     }
 
-    // Modified: isAdmin flag to track who updated it
     fun updateTaskStatus(id: Int, isDone: Boolean, isAdmin: Boolean = false) {
         val db = writableDatabase
         val values = ContentValues()
@@ -262,7 +256,7 @@ class DatabaseHelper(context: Context)
 
         return Pair(pending, done)
     }
-    
+
     fun getGlobalTaskCounts(): Pair<Int, Int> {
         val db = readableDatabase
         var pending = 0
@@ -279,7 +273,6 @@ class DatabaseHelper(context: Context)
         return Pair(pending, done)
     }
 
-    // New methods for User Notification
     fun getUnseenAdminUpdates(emailUser: String): ArrayList<String> {
         val list = ArrayList<String>()
         val db = readableDatabase

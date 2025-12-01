@@ -26,7 +26,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
             val newPass = etNewPassword.text.toString().trim()
             val confirmPass = etConfirmPassword.text.toString().trim()
 
-            // 1. Validasi Input
             if (email.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
                 Toast.makeText(this, "Mohon isi semua kolom!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -40,8 +39,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 2. Cek apakah email terdaftar (kita bisa pakai fungsi login tapi dengan password dummy)
-            // Ini adalah cara cepat untuk memastikan user ada di DB
             val usernameExists = db.getUsername(email).isNotEmpty()
 
             if (!usernameExists) {
@@ -49,12 +46,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 3. Update Password
             val success = db.updatePassword(email, newPass)
 
             if (success) {
                 Toast.makeText(this, "Password berhasil direset. Silakan login.", Toast.LENGTH_LONG).show()
-                finish() // Kembali ke halaman Login
+                finish()
             } else {
                 Toast.makeText(this, "Gagal mereset password.", Toast.LENGTH_LONG).show()
             }
